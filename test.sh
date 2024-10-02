@@ -47,6 +47,12 @@ aws ec2 authorize-security-group-ingress --group-id $sg_id --protocol tcp --port
 # Open SSH traffic port 22 for security group
 aws ec2 authorize-security-group-ingress --group-id $sg_id --protocol tcp --port 22 --cidr 0.0.0.0/0 > /dev/null
 
+# Allocate Elastic IP
+elastic_ip=$(aws ec2 allocate-address --domain $vpc_id --tag-specifications 'ResourceType=elastic-ip, Tags=[{Key=Name,Value=elastic-ip}]' --query AllocationId --output text)
+
+# Create NAT gateway associate it with above Elastic Ip and subnet2
+aws ec2 create-nat-gateway --subnet-id $sub2 --allocation-id $elastic_ip > /dev/null 
+
 # Create EC2 instance in public Subnet1
 ec2_id_1=$(aws ec2 run-instances --image-id ami-0ebfd941bbafe70c6 --count 1 --instance-type t2.micro  --security-group-ids $sg_id --subnet-id $sub1 --associate-public-ip-address --tag-specifications 'ResourceType=instance, Tags=[{Key=Name, Value=Public-CLI-Ec2}]' --query Instances[0].InstanceId --output text)
 
