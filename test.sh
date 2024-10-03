@@ -79,7 +79,3 @@ ec2_id_1=$(aws ec2 run-instances --image-id ami-0ebfd941bbafe70c6 --count 1 --in
 public_ip=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress[]' --filter 'Name=tag:Name, Values=Public-CLI-Ec2' --output text)
 
 echo Public Ip of the Instance: $public_ip
-
-# Create EC2 instance in private Subnet2
-ec2_id_2=$(aws ec2 run-instances --image-id ami-0ebfd941bbafe70c6 --count 1 --instance-type t2.micro  --security-group-ids $sg_id --subnet-id $sub2 --associate-public-ip-address --tag-specifications 'ResourceType=instance, Tags=[{Key=Name, Value=Private-CLI-Ec2}]' --query Instances[0].InstanceId --output text)
-
